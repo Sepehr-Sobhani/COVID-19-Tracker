@@ -1,6 +1,8 @@
 <template>
   <main v-if="!loading">
-    Show Data
+    <DataTitle :text="title" :dataDate="dataDate"/>
+    <DataBoxes :stats="stats"/>
+    <CountrySelect @get-country="getCountryData" :countries="countries"/>
   </main>
   <main class="flex flex-col align-middle justify-center text-center" v-else>
     <div class="text-gray-500 text-3xl mt-10 mb-6">
@@ -11,8 +13,17 @@
 </template>
 
 <script>
+import DataTitle from "../components/DataTitle";
+import DataBoxes from "../components/DataBoxes";
+import CountrySelect from "../components/CountrySelect";
+
 export default {
   name: 'Home',
+  components: {
+    DataTitle,
+    DataBoxes,
+    CountrySelect
+  },
   data() {
     return {
       loading: true,
@@ -23,12 +34,15 @@ export default {
       loadingImage: require('../assets/hourglass.gif')
     }
   },
-  components: {},
   methods: {
     async fetchCovidData() {
       const res = await fetch('https://api.covid19api.com/summary')
       return res.json();
-    }
+    },
+    getCountryData(country) {
+      this.stats = country;
+      this.title = country.Country;
+    },
   },
   async created() {
     const data = await this.fetchCovidData()
